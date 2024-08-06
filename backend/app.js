@@ -1,23 +1,36 @@
+require("dotenv").config({ path: "./.env" });
 const express = require('express');
 const app = express();
-const port = 8080;
+const logger = require('morgan');
+const cookieParser = require('cookie-parser');
+const usersRoutes = require("./routes/userRoutes")
 
-app.get("/",    (req, res, next)=>{
-    res.send("Welcome to the Ecommerce app")
-})
 
-app.listen(port, function(err){
-    console.log("Server Started running on port " + port)
+// setting up a database connection
+require("./config/db.config").DbConnection();
+
+// Logger middleware
+app.use(logger('tiny'));
+
+// Body parsers
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+// Cookie parser
+app.use(cookieParser());
+
+
+// base uri for user routes
+app.use(`/`, usersRoutes);
+
+// Catch-all route for unknown paths
+app.all('*', (req, res) => {
+    res.status(404).json({ success: false, message: `${req.url} not found` });
 });
 
 
-// morgan setup
-const logger = require("morgan");
-app.use(logger('tiny'));
-
-// unknown routes handler
-app.all("*", function(req, res) {
-    res.status(404).json({message : `${req.url} not found`})
+// Start server
+const PORT = process.env.PORT
+app.listen(process.env.PORT, () => {
+    console.log(`server started running on port ${process.env.PORT}`);
 })
-
-
