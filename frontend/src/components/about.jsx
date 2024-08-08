@@ -2,7 +2,7 @@
 
 
 import React, { useContext } from 'react';
-import AccessDenied from '../components/AccessDenied';
+import IsLoggedIn from '../components/isloggedin';
 import UserContext from '../contexts/usercontext';
 
 const AboutUs = () => {
@@ -76,7 +76,7 @@ const AboutUs = () => {
         </section>
       </div>
     ) : (
-      <AccessDenied />
+      <IsLoggedIn />
     )
   );
   

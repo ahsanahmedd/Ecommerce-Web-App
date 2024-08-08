@@ -84,10 +84,10 @@ exports.logoutaccount = (req, res) => {
     res.status(200).json({ success: true, message: "Logout successful" });
 };
 
-exports.shopaccount = (req, res) => {
-    try {
-        res.json({ success: true, message: "Shop Page" });
-    } catch (error) {
-        res.status(500).json({ success: false, message: "Internal Server Error" });
-    }
-};
+
+
+exports.adminaccount  = async (req, res) => {
+    const user = await userModel.findOne({email : req.user.email});
+    res.status(200).json({ success: true, user });
+}
+

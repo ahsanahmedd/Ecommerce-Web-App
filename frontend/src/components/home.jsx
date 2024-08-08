@@ -1,27 +1,27 @@
-
 import React, { useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { toast} from 'react-toastify';
+import { toast } from 'react-toastify';
 import UserContext from '../contexts/usercontext';
 
 const Home = () => {
-  const [isAuthenticated, setIsAuthenticated] = useContext(UserContext)
-
+  const [isAuthenticated, setIsAuthenticated] = useContext(UserContext);
   const navigate = useNavigate();
 
   const logout = async () => {
-    const token = document.cookie.split('; ').find(row => row.startsWith('token='));
+    // Extract the token from the cookie
+    const token = document.cookie.split('; ').find(row => row.startsWith('token='))?.split('=')[1];
 
     if (token) {
       try {
-        // Perform the logout request
-        await axios.get('http://localhost:8080/logout');
+        // Perform the logout request with the token in the body
+        await axios.put("http://localhost:8080/logout", { token });
+        
         // Clear the token cookie
         document.cookie = 'token=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/;';
-
-        setIsAuthenticated(false)
-        // Navigate to login page
+        
+        // Update the authentication state and navigate to the login page
+        setIsAuthenticated(false);
         navigate('/login');
       } catch (error) {
         console.error('Logout error:', error);
@@ -101,43 +101,38 @@ const Home = () => {
               <p className="text-gray-700">$30.00</p>
             </div>
             <div className="flex-none w-80 bg-white p-6 rounded-lg shadow-lg transition-transform transform hover:scale-105 hover:shadow-2xl">
-              <img src="https://images.unsplash.com/photo-1665071600586-14501a2b91c4?q=80&w=1770&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Product 4" className="w-full h-40 object-cover mb-4 rounded-lg" />
-              <p className="text-lg font-semibold">Gaming Console</p>
+              <img src="https://images.unsplash.com/photo-1509686204544-ea3d4850555c?q=80&w=1770&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Product 4" className="w-full h-40 object-cover mb-4 rounded-lg" />
+              <p className="text-lg font-semibold">Leather Bag</p>
               <p className="text-gray-700">$40.00</p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Newsletter Subscription */}
-      <section className="py-16 text-center">
-        <h2 className="text-4xl font-bold mb-8">Subscribe to Our Newsletter</h2>
-        <form className="flex justify-center space-x-4">
-          <input type="email" placeholder="Enter your email" className="p-3 border border-gray-300 rounded-lg w-64" />
-          <button type="submit" className="p-3 bg-blue-600 text-white rounded-lg">Subscribe</button>
-        </form>
+      {/* Newsletter Signup */}
+      <section className="py-16 text-center bg-blue-500 text-white">
+        <h2 className="text-3xl font-bold mb-4">Subscribe to Our Newsletter</h2>
+        <p className="text-lg mb-8">Get the latest updates and offers directly in your inbox.</p>
+        <div className="flex justify-center">
+          <input type="email" placeholder="Enter your email" className="p-3 w-1/2 max-w-md rounded-l-lg outline-none" />
+          <button className="bg-blue-700 px-6 py-3 rounded-r-lg font-semibold">Subscribe</button>
+        </div>
       </section>
 
       {/* Footer */}
-      <footer className="py-8 bg-gray-800 text-white text-center">
-        <div className="footer-links mb-4">
-          <Link to="/privacy" className="mx-2 hover:text-gray-400">Privacy Policy</Link>
-          <Link to="/terms" className="mx-2 hover:text-gray-400">Terms of Service</Link>
-        </div>
-        <div className="footer-social mb-4">
-          <i className="fab fa-facebook-f mx-2 cursor-pointer hover:text-gray-400"></i>
-          <i className="fab fa-twitter mx-2 cursor-pointer hover:text-gray-400"></i>
-          <i className="fab fa-instagram mx-2 cursor-pointer hover:text-gray-400"></i>
-        </div>
-        <div className="footer-contact">
-          <p>Contact us: info@ecommerce.com</p>
+      <footer className="bg-gray-900 text-white py-8">
+        <div className="container mx-auto text-center">
+          <div className="text-lg font-bold mb-4">Apna@Mart</div>
+          <div className="space-x-4 mb-4">
+            <a href="#" className="hover:text-gray-400">Privacy Policy</a>
+            <a href="#" className="hover:text-gray-400">Terms of Service</a>
+            <a href="#" className="hover:text-gray-400">Contact Us</a>
+          </div>
+          <p className="text-sm">© {new Date().getFullYear()} Apna@Mart. All rights reserved.</p>
         </div>
       </footer>
-      
-  
     </div>
   );
 };
 
 export default Home;
-

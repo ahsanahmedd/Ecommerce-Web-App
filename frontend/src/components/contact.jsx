@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
 import UserContext from '../contexts/usercontext'
-import AccessDenied from '../components/AccessDenied';
+import IsLoggedIn from '../components/isloggedin';
 
 
 const ContactUs = () => {
@@ -84,7 +84,7 @@ return (
 
     
   ) : (
-    <AccessDenied />
+    <IsLoggedIn />
   )
 );
 
