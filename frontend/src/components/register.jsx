@@ -1,22 +1,35 @@
-import React, { useState } from 'react';
+
+
+
+import React, { useContext, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import {toast } from 'react-toastify';
+import { toast } from 'react-toastify';
+import Cookies from 'js-cookie'; // Import js-cookie
+import UserContext from '../contexts/usercontext';
+
 
 const Register = () => {
+ 
+  const [isAuthenticated, setIsAuthenticated] = useContext(UserContext);
+
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     password: '',
     confirmPassword: '',
+    isAdmin: false,
   });
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+    const { name, value, type, checked } = e.target;
+    setFormData({
+      ...formData,
+      [name]: type === 'checkbox' ? checked : value
+    });
   };
 
   const handleSubmit = async (e) => {
@@ -37,12 +50,19 @@ const Register = () => {
         username: formData.name,
         email: formData.email,
         password: formData.password,
+        isAdmin: formData.isAdmin,
       });
 
       // Handle successful registration
       console.log('Registration successful:', response.data);
       
-      toast.success("Registered Successfully.")
+      // Set the token as a cookie for 1 hour
+      Cookies.set('token', response.data.token, { expires: 1 / 24 }); // 1 hour
+
+      toast.success("Registered Successfully.");
+      
+      setIsAuthenticated(true)
+      
 
       navigate('/login'); // Redirect to the login page upon success
     } catch (err) {
@@ -108,6 +128,17 @@ const Register = () => {
               required
             />
           </div>
+          <div className="mb-4 flex items-center gap-3">
+            <label htmlFor="isAdmin" className="block text-gray-700 mb-2">Register as Admin</label>
+            <input
+              type="checkbox"
+              name="isAdmin"
+              id="isAdmin"
+              checked={formData.isAdmin}
+              onChange={handleChange}
+              className="w-5 h-5"
+            />
+          </div>
           <button
             type="submit"
             className={`w-full p-3 rounded-lg font-semibold ${loading ? 'bg-gray-400' : 'bg-blue-600 text-white'}`}
@@ -131,3 +162,4 @@ const Register = () => {
 };
 
 export default Register;
+

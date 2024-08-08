@@ -5,6 +5,10 @@ import { Route } from "react-router-dom";
 import Home from '../components/home'
 import Register from '../components/register';
 import Login from '../components/login';
+import Admin from '../components/admin';
+import About from '../components/about'
+import Contact from '../components/contact'
+
 
 
 const routes = () => {
@@ -14,9 +18,9 @@ const routes = () => {
             <Route path="/" element={<Home/>}></Route>
             <Route path="/register" element={<Register/>}></Route>
             <Route path="/login" element={<Login/>}></Route>
-
-            
-            
+            <Route path="/admin" element={<Admin/>}></Route>
+            <Route path="/about" element={<About/>}></Route>
+            <Route path="/contact" element={<Contact/>}></Route>    
             </Routes>    
     )
 }

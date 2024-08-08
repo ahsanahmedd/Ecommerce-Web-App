@@ -1,8 +1,14 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import Cookies from 'js-cookie'; // Import js-cookie
+import UserContext from '../contexts/usercontext';
 
 const Login = () => {
+
+  const [isAuthenticated, setIsAuthenticated] = useContext(UserContext);
+
+
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     email: '',
@@ -30,6 +36,12 @@ const Login = () => {
 
       // Handle successful login
       console.log('Login successful:', response.data);
+
+      // Set the token as a cookie for 1 hour
+      Cookies.set('token', response.data.token, { expires: 1 / 24 }); // 1 hour
+
+      setIsAuthenticated(true)
+      
       navigate('/'); // Redirect to the home page upon success
     } catch (err) {
       // Handle errors

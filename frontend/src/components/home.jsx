@@ -1,14 +1,43 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+
+import React, { useContext } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import { toast} from 'react-toastify';
+import UserContext from '../contexts/usercontext';
 
 const Home = () => {
+  const [isAuthenticated, setIsAuthenticated] = useContext(UserContext)
+
+  const navigate = useNavigate();
+
+  const logout = async () => {
+    const token = document.cookie.split('; ').find(row => row.startsWith('token='));
+
+    if (token) {
+      try {
+        // Perform the logout request
+        await axios.get('http://localhost:8080/logout');
+        // Clear the token cookie
+        document.cookie = 'token=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/;';
+
+        setIsAuthenticated(false)
+        // Navigate to login page
+        navigate('/login');
+      } catch (error) {
+        console.error('Logout error:', error);
+        toast.error('Error during logout. Please try again.');
+      }
+    } else {
+      toast.info('Please sign in to sign out.');
+    }
+  };
+
   return (
     <div className="home bg-gray-100 text-gray-800 overflow-x-hidden overflow-y-auto">
       {/* Header */}
       <header className="flex justify-between items-center p-5 bg-white shadow-md">
         <div className="text-2xl font-bold text-gray-900">Apna@Mart</div>
         <nav className="space-x-6 flex items-center">
-          <Link to="/" className="hover:text-gray-600 transition-colors">Home</Link>
           <Link to="/shop" className="hover:text-gray-600 transition-colors">Shop</Link>
           <Link to="/about" className="hover:text-gray-600 transition-colors">About Us</Link>
           <Link to="/contact" className="hover:text-gray-600 transition-colors">Contact Us</Link>
@@ -16,6 +45,7 @@ const Home = () => {
         <div className="space-x-4 flex items-center">
           <Link to="/login" className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold transition duration-300">Sign In</Link>
           <Link to="/register" className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold transition duration-300">Sign Up</Link>
+          <button onClick={logout} className='px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600'>Logout</button>
           <i className="fas fa-search cursor-pointer text-lg hover:text-gray-600"></i>
           <i className="fas fa-user cursor-pointer text-lg hover:text-gray-600"></i>
           <i className="fas fa-shopping-cart cursor-pointer text-lg hover:text-gray-600"></i>
@@ -24,7 +54,7 @@ const Home = () => {
 
       {/* Hero Banner */}
       <section className="relative">
-        <img src="https://plus.unsplash.com/premium_photo-1664201890375-f8fa405cdb7d?q=80&w=1770&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Hero Banner" className="w-full h-[60vh] " /> 
+        <img src="https://plus.unsplash.com/premium_photo-1664201890375-f8fa405cdb7d?q=80&w=1770&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Hero Banner" className="w-full h-[60vh] " />
         <div className="absolute inset-0 flex flex-col items-center justify-center text-white bg-black bg-opacity-40">
           <h1 className="text-5xl font-bold">Welcome to Our Premium Store</h1>
           <p className="text-xl mt-4">Discover top-quality products at unbeatable prices</p>
@@ -51,120 +81,33 @@ const Home = () => {
       </section>
 
       {/* Featured Products */}
-
-
-      {/* <section className="py-16 text-center bg-gray-100 overflow-x-auto overflow-y-hidden  ">
+      <section className="py-16 text-center bg-gray-100">
         <h2 className="text-4xl font-bold mb-8">Featured Products</h2>
-        <div className="flex overflow-x-auto space-x-8 px-8 py-4">
-          <div className="product-item bg-white p-6 rounded-lg shadow-lg transition-transform transform hover:scale-105 hover:shadow-2xl">
-            <img src="https://plus.unsplash.com/premium_photo-1691367279293-f82232361dae?q=80&w=1770&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Product 1" className="w-full h-40 object-cover mb-4 rounded-lg" />
-            <p className="text-lg font-semibold">Polo T-Shirts</p>
-            <p className="text-gray-700">$10.00</p>
+        <div className="relative">
+          <div className="flex space-x-8 px-8 py-4 overflow-x-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
+            <div className="flex-none w-80 bg-white p-6 rounded-lg shadow-lg transition-transform transform hover:scale-105 hover:shadow-2xl">
+              <img src="https://plus.unsplash.com/premium_photo-1691367279293-f82232361dae?q=80&w=1770&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Product 1" className="w-full h-40 object-cover mb-4 rounded-lg" />
+              <p className="text-lg font-semibold">Polo T-Shirts</p>
+              <p className="text-gray-700">$10.00</p>
+            </div>
+            <div className="flex-none w-80 bg-white p-6 rounded-lg shadow-lg transition-transform transform hover:scale-105 hover:shadow-2xl">
+              <img src="https://images.unsplash.com/photo-1699901232384-f1646fb2a8da?q=80&w=1770&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Product 2" className="w-full h-40 object-cover mb-4 rounded-lg" />
+              <p className="text-lg font-semibold">Nike Shoes</p>
+              <p className="text-gray-700">$20.00</p>
+            </div>
+            <div className="flex-none w-80 bg-white p-6 rounded-lg shadow-lg transition-transform transform hover:scale-105 hover:shadow-2xl">
+              <img src="https://images.unsplash.com/photo-1722503585127-f850a5cc7da5?q=80&w=1770&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Product 3" className="w-full h-40 object-cover mb-4 rounded-lg" />
+              <p className="text-lg font-semibold">iPhone 15</p>
+              <p className="text-gray-700">$30.00</p>
+            </div>
+            <div className="flex-none w-80 bg-white p-6 rounded-lg shadow-lg transition-transform transform hover:scale-105 hover:shadow-2xl">
+              <img src="https://images.unsplash.com/photo-1665071600586-14501a2b91c4?q=80&w=1770&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Product 4" className="w-full h-40 object-cover mb-4 rounded-lg" />
+              <p className="text-lg font-semibold">Gaming Console</p>
+              <p className="text-gray-700">$40.00</p>
+            </div>
           </div>
-          <div className="product-item bg-white p-6 rounded-lg shadow-lg transition-transform transform hover:scale-105 hover:shadow-2xl">
-            <img src="https://images.unsplash.com/photo-1699901232384-f1646fb2a8da?q=80&w=1770&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Product 2" className="w-full h-40 object-cover mb-4 rounded-lg" />
-            <p className="text-lg font-semibold">Nike Shoes</p>
-            <p className="text-gray-700">$20.00</p>
-          </div>
-          <div className="product-item bg-white p-6 rounded-lg shadow-lg transition-transform transform hover:scale-105 hover:shadow-2xl">
-            <img src="https://images.unsplash.com/photo-1722503585127-f850a5cc7da5?q=80&w=1770&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Product 3" className="w-full h-40 object-cover mb-4 rounded-lg" />
-            <p className="text-lg font-semibold">iPhone 15</p>
-            <p className="text-gray-700">$30.00</p>
-          </div>
-
-
-          <div className="product-item bg-white p-6 rounded-lg shadow-lg transition-transform transform hover:scale-105 hover:shadow-2xl">
-            <img src="https://images.unsplash.com/photo-1722503585127-f850a5cc7da5?q=80&w=1770&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Product 3" className="w-full h-40 object-cover mb-4 rounded-lg" />
-            <p className="text-lg font-semibold">iPhone 15</p>
-            <p className="text-gray-700">$30.00</p>
-          </div>
-
-
-          <div className="product-item bg-white p-6 rounded-lg shadow-lg transition-transform transform hover:scale-105 hover:shadow-2xl">
-            <img src="https://images.unsplash.com/photo-1722503585127-f850a5cc7da5?q=80&w=1770&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Product 3" className="w-full h-40 object-cover mb-4 rounded-lg" />
-            <p className="text-lg font-semibold">iPhone 15</p>
-            <p className="text-gray-700">$30.00</p>
-          </div>
-
-
-
-          <div className="product-item bg-white p-6 rounded-lg shadow-lg transition-transform transform hover:scale-105 hover:shadow-2xl">
-            <img src="https://images.unsplash.com/photo-1722503585127-f850a5cc7da5?q=80&w=1770&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Product 3" className="w-full h-40 object-cover mb-4 rounded-lg" />
-            <p className="text-lg font-semibold">iPhone 15</p>
-            <p className="text-gray-700">$30.00</p>
-          </div>
-
-
-          <div className="product-item bg-white p-6 rounded-lg shadow-lg transition-transform transform hover:scale-105 hover:shadow-2xl">
-            <img src="https://images.unsplash.com/photo-1722503585127-f850a5cc7da5?q=80&w=1770&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Product 3" className="w-full h-40 object-cover mb-4 rounded-lg" />
-            <p className="text-lg font-semibold">iPhone 15</p>
-            <p className="text-gray-700">$30.00</p>
-          </div>
-
-
-
-          <div className="product-item bg-white p-6 rounded-lg shadow-lg transition-transform transform hover:scale-105 hover:shadow-2xl">
-            <img src="https://images.unsplash.com/photo-1722503585127-f850a5cc7da5?q=80&w=1770&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Product 3" className="w-full h-40 object-cover mb-4 rounded-lg" />
-            <p className="text-lg font-semibold">iPhone 15</p>
-            <p className="text-gray-700">$30.00</p>
-          </div>
-
-
-
-          <div className="product-item bg-white p-6 rounded-lg shadow-lg transition-transform transform hover:scale-105 hover:shadow-2xl">
-            <img src="https://images.unsplash.com/photo-1722503585127-f850a5cc7da5?q=80&w=1770&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Product 3" className="w-full h-40 object-cover mb-4 rounded-lg" />
-            <p className="text-lg font-semibold">iPhone 15</p>
-            <p className="text-gray-700">$30.00</p>
-          </div>
-
-
-
-          <div className="product-item bg-white p-6 rounded-lg shadow-lg transition-transform transform hover:scale-105 hover:shadow-2xl">
-            <img src="https://images.unsplash.com/photo-1722503585127-f850a5cc7da5?q=80&w=1770&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Product 3" className="w-full h-40 object-cover mb-4 rounded-lg" />
-            <p className="text-lg font-semibold">iPhone 15</p>
-            <p className="text-gray-700">$30.00</p>
-          </div>
-
         </div>
-      </section> */}
-
-
-
-
-<section className="py-16 text-center bg-gray-100">
-  <h2 className="text-4xl font-bold mb-8">Featured Products</h2>
-  <div className="relative">
-    <div className="flex space-x-8 px-8 py-4 overflow-x-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
-      <div className="flex-none w-80 bg-white p-6 rounded-lg shadow-lg transition-transform transform hover:scale-105 hover:shadow-2xl">
-        <img src="https://plus.unsplash.com/premium_photo-1691367279293-f82232361dae?q=80&w=1770&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Product 1" className="w-full h-40 object-cover mb-4 rounded-lg" />
-        <p className="text-lg font-semibold">Polo T-Shirts</p>
-        <p className="text-gray-700">$10.00</p>
-      </div>
-      <div className="flex-none w-80 bg-white p-6 rounded-lg shadow-lg transition-transform transform hover:scale-105 hover:shadow-2xl">
-        <img src="https://images.unsplash.com/photo-1699901232384-f1646fb2a8da?q=80&w=1770&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Product 2" className="w-full h-40 object-cover mb-4 rounded-lg" />
-        <p className="text-lg font-semibold">Nike Shoes</p>
-        <p className="text-gray-700">$20.00</p>
-      </div>
-      <div className="flex-none w-80 bg-white p-6 rounded-lg shadow-lg transition-transform transform hover:scale-105 hover:shadow-2xl">
-        <img src="https://images.unsplash.com/photo-1722503585127-f850a5cc7da5?q=80&w=1770&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Product 3" className="w-full h-40 object-cover mb-4 rounded-lg" />
-        <p className="text-lg font-semibold">iPhone 15</p>
-        <p className="text-gray-700">$30.00</p>
-      </div>
-      <div className="flex-none w-80 bg-white p-6 rounded-lg shadow-lg transition-transform transform hover:scale-105 hover:shadow-2xl">
-        <img src="https://images.unsplash.com/photo-1699901232384-f1646fb2a8da?q=80&w=1770&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Product 4" className="w-full h-40 object-cover mb-4 rounded-lg" />
-        <p className="text-lg font-semibold">Sport Watch</p>
-        <p className="text-gray-700">$50.00</p>
-      </div>
-      <div className="flex-none w-80 bg-white p-6 rounded-lg shadow-lg transition-transform transform hover:scale-105 hover:shadow-2xl">
-        <img src="https://images.unsplash.com/photo-1699901232384-f1646fb2a8da?q=80&w=1770&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Product 5" className="w-full h-40 object-cover mb-4 rounded-lg" />
-        <p className="text-lg font-semibold">Leather Jacket</p>
-        <p className="text-gray-700">$120.00</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-
+      </section>
 
       {/* Newsletter Subscription */}
       <section className="py-16 text-center">
@@ -190,8 +133,11 @@ const Home = () => {
           <p>Contact us: info@ecommerce.com</p>
         </div>
       </footer>
+      
+  
     </div>
   );
 };
 
 export default Home;
+

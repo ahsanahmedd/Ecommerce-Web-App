@@ -1,15 +1,44 @@
+// const express = require('express');
+// const { registeraccount, loginaccount, logoutaccount, shopaccount } = require('../controllers/user.controllers');
+// const IsLoggedIn = require("../middlewares/auth.middleware")
+// const router = express.Router();
+
+// // register account
+// router.post("/register", registeraccount)
+
+// router.post("/login", loginaccount)
+
+// router.get("/logout", logoutaccount)
+
+// router.get("/shop",IsLoggedIn, shopaccount);
+
+
+// module.exports = router
+
+
+
 const express = require('express');
-const { registeraccount, loginaccount, logoutaccount } = require('../controllers/user.controllers');
+const { registeraccount, loginaccount, logoutaccount, shopaccount } = require('../controllers/user.controllers');
+const { IsLoggedIn, IsAdmin } = require('../middlewares/auth.middleware');
 const router = express.Router();
 
-// register account
-router.post("/register", registeraccount)
+// Register account
+router.post('/register', registeraccount);
 
-router.post("/login", loginaccount)
+// Login account
+router.post('/login', loginaccount);
 
-router.get("/logout", logoutaccount)
+// Logout account
+router.get('/logout', logoutaccount);
 
-module.exports = router
+// User routes
+router.get('/shop', IsLoggedIn, shopaccount);
 
+// Admin routes
+router.get('/admin/dashboard', [IsLoggedIn, IsAdmin], (req, res) => {
+    res.status(200).json({ success: true, message: "Admin Page" });
+});
+
+module.exports = router;
 
 
