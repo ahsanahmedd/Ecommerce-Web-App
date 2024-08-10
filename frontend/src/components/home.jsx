@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import axios from '../utils/axios';
 import { toast } from 'react-toastify';
 import UserContext from '../contexts/usercontext';
 
@@ -11,12 +11,10 @@ const Home = () => {
   const logout = async () => {
     // Extract the token from the cookie
     const token = document.cookie.split('; ').find(row => row.startsWith('token='))?.split('=')[1];
-
     if (token) {
       try {
         // Perform the logout request with the token in the body
-        await axios.put("http://localhost:8080/logout", { token });
-        
+        await axios.get(`/logout?token=${token}`);
         // Clear the token cookie
         document.cookie = 'token=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/;';
         

@@ -1,8 +1,4 @@
 
-
-
-
-
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const userModel = require('../models/user.model');
@@ -41,7 +37,7 @@ exports.registeraccount = async (req, res) => {
             sameSite: 'strict'
         });
 
-        res.status(200).json({ success: true, newUser,token });
+        res.status(200).json({ success: true, newUser, token });
     } catch (error) {
         res.status(500).json({ success: false, message: error.message });
     }
@@ -53,7 +49,7 @@ exports.loginaccount = async (req, res) => {
     if (!email || !password) {
         return res.status(403).json({ success: false, message: "Please fill the details" });
     }
-
+    
     try {
         const user = await userModel.findOne({ email });
         if (!user) {
@@ -73,11 +69,90 @@ exports.loginaccount = async (req, res) => {
             sameSite: 'strict'
         });
 
-        res.status(200).json({ success: true, user,token });
+        res.status(200).json({ success: true, user, token });
     } catch (error) {
         res.status(500).json({ success: false, message: error.message });
     }
 };
+
+
+
+
+
+
+exports.loginWithGoogle = async (req, res, next) => {
+
+    try {
+        const { username, email} = req.body;
+
+        if (!username) {
+            return res.status(403).json({ success: false, message: "user is not provided" })
+        }
+
+        
+        if (!email) {
+            return res.status(403).json({ success: false, message: "Email  is not provided" })
+        }
+
+
+        const user = await userModel.findOne({ email });
+
+        if (!user) {
+
+            const salt = await bcrypt.genSalt(10);
+            const password = await bcrypt.hash("dummyPassword", salt);
+
+            const newUser = await userModel.create({
+                username,
+                email,
+                password,
+                isAdmin : false
+            });
+
+            const token = jwt.sign(
+                { email: newUser.email, userid: newUser._id, isAdmin: newUser.isAdmin },
+                secretKey,
+                { expiresIn: '1h' }
+            );
+
+            res.cookie("token", token, {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === 'production',
+                sameSite: 'strict'
+            });
+
+            res.status(200).json({success : false, user, token})
+        }
+
+
+        else{
+        if(user.email === email || user.username === username){
+                 
+        const token = jwt.sign({ email: user.email, userid: user._id, isAdmin: user.isAdmin }, secretKey, { expiresIn: '1h' });
+
+        res.cookie("token", token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'strict'
+        });
+
+        res.status(200).json({ success: true, user, token });
+            }
+        }
+
+
+
+
+        
+    } catch (error) {
+        console.log(error)
+    }
+
+}
+
+
+
+
 
 exports.logoutaccount = (req, res) => {
     res.clearCookie("token");
@@ -86,8 +161,8 @@ exports.logoutaccount = (req, res) => {
 
 
 
-exports.adminaccount  = async (req, res) => {
-    const user = await userModel.findOne({email : req.user.email});
+exports.adminaccount = async (req, res) => {
+    const user = await userModel.findOne({ email: req.user.email });
     res.status(200).json({ success: true, user });
 }
 

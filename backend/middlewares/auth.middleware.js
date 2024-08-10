@@ -9,8 +9,8 @@ config();
 const secretKey = process.env.JWT_SECRET_KEY;
 
 function IsLoggedIn(req, res, next) {
-    // const token = req.cookies.token;
-    const token = req.body.token || req.cookies.token;
+    
+    const token = req.query.token|| req.cookies.token;
     if (!token) {
         return res.status(401).json({ success: false, message: "Please sign in to continue" });
     }

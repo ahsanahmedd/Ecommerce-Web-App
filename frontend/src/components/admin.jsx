@@ -1,13 +1,9 @@
 
 
-
-
-
-
 import React, { useEffect, useState } from 'react';
 import AccessDenied from '../components/AccessDenied';
 import Loader from '../components/loader';
-import axios from 'axios';
+import axios from '../utils/axios';
 import { toast } from 'react-toastify';
 
 const Admin = () => {
@@ -18,18 +14,10 @@ const Admin = () => {
       try {
         // Extract the token from the cookie
         const token = document.cookie.split('; ').find(row => row.startsWith('token='))?.split('=')[1];
-
+  
         if (token) {
-          // Perform the request with the token in the body
           
-          const response = await axios.post('http://localhost:8080/admin/dashboard', { token });
-
-          // const response = await axios.get('http://localhost:8080/admin/dashboard', {
-          //   headers: {
-          //     'Authorization': `Bearer ${token}`
-          //   }
-          // });
-
+         const response = await axios.get(`/admin/dashboard?token=${token}`);
           setIsAdmin(response.data.user.isAdmin)
         } 
         else{

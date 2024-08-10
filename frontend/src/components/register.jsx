@@ -3,7 +3,7 @@
 
 import React, { useContext, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import axios from '../utils/axios';
 import { toast } from 'react-toastify';
 import Cookies from 'js-cookie'; // Import js-cookie
 import UserContext from '../contexts/usercontext';
@@ -46,7 +46,7 @@ const Register = () => {
       }
 
       // Send a POST request to the /register API endpoint
-      const response = await axios.post('http://localhost:8080/register', {
+      const response = await axios.post('/register', {
         username: formData.name,
         email: formData.email,
         password: formData.password,
