@@ -36,6 +36,8 @@ const Home = () => {
       <header className="flex justify-between items-center p-5 bg-white shadow-md">
         <div className="text-2xl font-bold text-gray-900">Apna@Mart</div>
         <nav className="space-x-6 flex items-center">
+        <input className='px-5 bg-blue-300  py-1' type="Search here" />
+      
           <Link to="/shop" className="hover:text-gray-600 transition-colors">Shop</Link>
           <Link to="/about" className="hover:text-gray-600 transition-colors">About Us</Link>
           <Link to="/contact" className="hover:text-gray-600 transition-colors">Contact Us</Link>
